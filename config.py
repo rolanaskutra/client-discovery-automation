@@ -2,6 +2,9 @@
 Konfigūracija: B2B gamintojo LinkedIn automatizavimas su Claude AI.
 """
 import os
+from dotenv import load_dotenv
+
+load_dotenv()  # Užkrauna .env failą lokaliam darbui
 
 # --- Claude AI (Anthropic) ---
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
