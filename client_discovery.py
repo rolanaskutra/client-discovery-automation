@@ -20,12 +20,18 @@ from agents import (
     create_engagement_plan,
     analyze_and_recommend,
 )
-from sheets_integration import (
-    save_posts,
-    save_leads,
-    save_engagement_plan,
-    save_analysis,
-)
+def _try_load_sheets():
+    """Bando užkrauti Google Sheets modulį (gali nepavykti lokaliai)."""
+    import subprocess
+    result = subprocess.run(
+        [sys.executable, "-c", "from sheets_integration import save_posts"],
+        capture_output=True, timeout=10,
+    )
+    if result.returncode == 0:
+        import sheets_integration
+        return sheets_integration
+    print("  [~] Google Sheets nepasiekiamas – rezultatai bus saugomi lokaliai")
+    return None
 
 
 def run_content_generation():
@@ -100,45 +106,27 @@ def main():
 
     results = {}
 
+    sheets = _try_load_sheets()
+
     if "all" in tasks or "content" in tasks:
         posts = run_content_generation()
         results["posts"] = posts
-        try:
-            save_posts(posts)
-            print("  → Postai išsaugoti į Google Sheets")
-        except Exception as e:
-            print(f"  ⚠ Sheets klaida (postai): {e}")
-            _save_local(posts, "posts")
+        _save(sheets, "save_posts", posts, "posts")
 
     if "all" in tasks or "leads" in tasks:
         leads = run_lead_research()
         results["leads"] = leads
-        try:
-            save_leads(leads)
-            print("  → Klientai išsaugoti į Google Sheets")
-        except Exception as e:
-            print(f"  ⚠ Sheets klaida (klientai): {e}")
-            _save_local(leads, "leads")
+        _save(sheets, "save_leads", leads, "leads")
 
     if "all" in tasks or "growth" in tasks:
         plan = run_network_growth()
         results["plan"] = plan
-        try:
-            save_engagement_plan(plan)
-            print("  → Planas išsaugotas į Google Sheets")
-        except Exception as e:
-            print(f"  ⚠ Sheets klaida (planas): {e}")
-            _save_local(plan, "growth_plan")
+        _save(sheets, "save_engagement_plan", plan, "growth_plan")
 
     if "all" in tasks or "analyze" in tasks:
         analysis = run_analysis()
         results["analysis"] = analysis
-        try:
-            save_analysis(analysis)
-            print("  → Analizė išsaugota į Google Sheets")
-        except Exception as e:
-            print(f"  ⚠ Sheets klaida (analizė): {e}")
-            _save_local(analysis, "analysis")
+        _save(sheets, "save_analysis", analysis, "analysis")
 
     print("\n" + "=" * 60)
     print("Visi agentai baigė darbą.")
@@ -148,8 +136,20 @@ def main():
     return results
 
 
+def _save(sheets_module, func_name: str, data, local_name: str):
+    """Bando išsaugoti į Sheets, jei nepavyksta – lokaliai."""
+    if sheets_module:
+        try:
+            getattr(sheets_module, func_name)(data)
+            print(f"  → Išsaugota į Google Sheets")
+            return
+        except Exception as e:
+            print(f"  ⚠ Sheets klaida: {e}")
+    _save_local(data, local_name)
+
+
 def _save_local(data, name: str):
-    """Atsarginis variantas – išsaugo lokaliai jei Sheets nepasiekiamas."""
+    """Išsaugo rezultatus lokaliai JSON faile."""
     filename = f"output_{name}_{datetime.now().strftime('%Y%m%d_%H%M')}.json"
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
