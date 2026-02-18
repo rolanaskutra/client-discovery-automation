@@ -14,25 +14,70 @@ CLAUDE_MODEL = "claude-sonnet-4-5-20250929"
 GOOGLE_SHEETS_CREDENTIALS = os.environ.get("GOOGLE_SHEETS_CREDENTIALS", "")
 SPREADSHEET_ID = os.environ.get("SPREADSHEET_ID", "")
 
-# --- Įmonės profilis (pritaikykite savo įmonei) ---
+# --- Eurodita įmonės profilis ---
 COMPANY_PROFILE = {
-    "pavadinimas": "UAB Pavyzdys",
-    "sektorius": "Pramoninė gamyba",
+    "pavadinimas": "Eurodita",
+    "pilnas_pavadinimas": "UAB Eurodita",
+    "sektorius": "Medinių konstrukcijų gamyba (B2B private-label)",
+    "aprasymas": (
+        "Eurodita – nuo 1994 m. veikiantis rąstinių namų, glulam namų ir medinių "
+        "konstrukcijų gamintojas iš Kauno, Lietuvos. Dirbame išskirtinai B2B modeliu: "
+        "gaminame private-label principu – mūsų partneriai (dileriai, statybų įmonės, "
+        "distributeriai) parduoda mūsų produkciją savo prekės ženklu. Kliento klientas "
+        "niekada nemato Eurodita vardo. Apdorojame 150 000 m² FSC sertifikuotos "
+        "skandinaviškos eglės medienos per metus, pagaminame ~2000 individualių "
+        "konstrukcijų ir ~12 000 standartinių nameliŲ. 98% užsakymų pristatome laiku."
+    ),
     "produktai": [
-        "CNC apdirbtos detalės",
-        "Metalo konstrukcijos",
-        "Pramoniniai komponentai",
+        "Rąstiniai namai (log cabins)",
+        "Glulam namai ir konstrukcijos",
+        "Sodo nameliai ir pavėsinės",
+        "Garažai ir sandėliukai",
+        "Pirčių barelinės (sauna barrels)",
+        "Glamping podai",
+        "Komercinės medinės konstrukcijos",
+        "Individualūs projektai pagal užsakymą (bespoke)",
+    ],
+    "unikalus_pasiulymas": [
+        "Private-label / white-label gamyba (partnerio prekės ženklu)",
+        "Nėra minimalaus užsakymo kiekio (no MOQ)",
+        "Pilna individualizacija: dydis, sienos storis, išplanavimas",
+        "FSC sertifikuota skandinaviška mediena",
+        "Vokiška Hundegger glulam sistema, itališkos Nardi džiovyklos",
+        "AutoCAD + HSB CAD projektavimas",
+        "3D vizualizacijos partnerio prekės ženklu",
+        "30+ metų patirtis, eksportas į 14+ šalių",
     ],
     "tiksliniai_klientai": [
-        "Automobilių pramonė",
-        "Maisto pramonės įranga",
-        "Energetikos sektorius",
-        "Statybų sektorius",
+        "Rąstinių namų dileriai ir pardavėjai (log cabin dealers)",
+        "Sodo pastatų mažmenininkai (garden building retailers)",
+        "Statybų įmonės ir rangovai (construction companies)",
+        "Nekilnojamojo turto vystytojai (property developers)",
+        "Glamping ir turizmo verslas (glamping operators)",
+        "Distributeriai ir didmenininkai (distributors)",
+        "Architektų studijos (architectural firms)",
     ],
-    "regionai": ["Lietuva", "Latvija", "Estija", "Skandinavija", "Vokietija"],
-    "kalba": "lt",  # lt = lietuvių, en = anglų, mixed = mišrus
-    "tonas": "profesionalus, bet žmogiškas, be korporatyvinio žargono",
-    "linkedin_url": "",
+    "regionai": [
+        "Jungtinė Karalystė (UK)",
+        "Vokietija",
+        "Prancūzija",
+        "Skandinavija (Švedija, Norvegija, Danija, Suomija)",
+        "Beniliuksas (Belgija, Nyderlandai, Liuksemburgas)",
+        "JAV ir Kanada",
+        "Australija ir Naujoji Zelandija",
+        "Airija",
+        "Italija, Ispanija",
+    ],
+    "kalba": "en",  # Tarptautinė auditorija – anglų kalba
+    "tonas": (
+        "Profesionalus, bet šiltas ir žmogiškas. Kalbame kaip patyrę gamintojai, "
+        "kurie supranta dilerių verslą. Ne korporatyvinis žargonas, o praktinė "
+        "patirtis ir konkretūs pavyzdžiai. Pabrėžiame partnerystę, ne pardavimą."
+    ),
+    "linkedin_url": "https://www.linkedin.com/company/eurodita",
+    "svetaine": "https://eurodita.com",
+    "lokacija": "Kaunas, Lietuva",
+    "imone_nuo": 1994,
 }
 
 # --- LinkedIn turinio nustatymai ---
@@ -41,12 +86,12 @@ CONTENT_CONFIG = {
     "posts_per_week": 3,
     # Turinio tipų proporcijos (turi sudaryti 100%)
     "content_mix": {
-        "gamybos_procesas": 25,       # Behind-the-scenes
-        "klientu_istorijos": 20,      # Case studies / atsiliepimai
-        "industrijos_insights": 20,   # Sektoriaus naujienos ir komentarai
-        "komandos_prisistatymas": 15, # Darbuotojai, kultūra
-        "produktu_naujienos": 10,     # Nauji produktai / pajėgumai
-        "patarimų_postai": 10,       # Edukaciniai postai
+        "gamybos_procesas": 20,       # Behind-the-scenes: medienos apdorojimas, glulam linija, džiovyklos
+        "partneriu_sekmes": 20,       # Dilerių sėkmės istorijos, private-label nauda
+        "industrijos_insights": 20,   # Log cabin rinkos tendencijos, medienos industrija, tvarumas
+        "produktu_showcase": 15,      # Nauji projektai, bespoke namai, glamping podai
+        "b2b_patarimų_postai": 15,   # Patarimai dileriams: kaip parduoti, rinkodaros tips
+        "komanda_ir_kultura": 10,     # Eurodita gamykla, žmonės, FSC, Kaunas
     },
     # Natūralumo nustatymai
     "naturalness": {
@@ -62,19 +107,36 @@ CONTENT_CONFIG = {
 # --- Agentų konfigūracija ---
 AGENTS_CONFIG = {
     "content_creator": {
-        "role": "LinkedIn turinio kūrėjas",
-        "focus": "Natūralus, įtraukiantis B2B turinys",
+        "role": "LinkedIn turinio kūrėjas medinių namų B2B gamintojui",
+        "focus": (
+            "Natūralus, įtraukiantis turinys apie rąstinius namus, glulam konstrukcijas, "
+            "private-label gamybą ir medienos industriją. Auditorija – dileriai, "
+            "distributeriai, statybų įmonės visoje Europoje ir pasaulyje. "
+            "Turinys anglų kalba."
+        ),
     },
     "lead_researcher": {
-        "role": "Potencialių klientų tyrėjas",
-        "focus": "Tikslinių įmonių ir kontaktų identifikavimas",
+        "role": "Potencialių B2B partnerių (dilerių/distributorių) tyrėjas",
+        "focus": (
+            "Ieško log cabin dilerių, sodo pastatų pardavėjų, statybų įmonių, "
+            "glamping operatorių ir distributorių, kurie galėtų tapti Eurodita "
+            "private-label partneriais. Fokusas: UK, Vokietija, Skandinavija, "
+            "Prancūzija, Beniliuksas, JAV."
+        ),
     },
     "network_grower": {
-        "role": "Tinklo augimo strategas",
-        "focus": "Ryšių plėtimas ir engagement strategija",
+        "role": "Tinklo augimo strategas B2B medienos pramonei",
+        "focus": (
+            "Ryšių plėtimas su log cabin dileriais, statybų verslo savininkais, "
+            "architektais ir nekilnojamojo turto vystytojais. Engagement strategija "
+            "pritaikyta B2B private-label gamintojo specifikai."
+        ),
     },
     "analyst": {
-        "role": "LinkedIn analitikos specialistas",
-        "focus": "Rezultatų stebėjimas ir rekomendacijos",
+        "role": "LinkedIn analitikos specialistas medienos/statybų sektoriui",
+        "focus": (
+            "Rezultatų stebėjimas ir rekomendacijos Eurodita LinkedIn puslapiui. "
+            "Analizuoja kas veikia log cabin / timber frame B2B nišoje."
+        ),
     },
 }
