@@ -1,0 +1,32 @@
+name: LinkedIn B2B Automation
+
+on:
+  schedule:
+    - cron: '0 6 * * 1-5'  # Darbo dienomis 6:00 UTC (8:00 LT)
+  workflow_dispatch:
+    inputs:
+      task:
+        description: 'Kuri užduotis (all, content, leads, growth, analyze)'
+        required: false
+        default: 'all'
+
+jobs:
+  run-agents:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run LinkedIn agents
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
+          SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
+        run: python client_discovery.py ${{ github.event.inputs.task || 'all' }}
